@@ -1,0 +1,6 @@
+-r requirements.txt
+
+mock
+pytest
+mongomock
+webtest

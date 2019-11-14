@@ -1,0 +1,5 @@
+-r requirements.3rd
+-e git+git@github.com:vahana/slovar.git#egg=slovar
+-e git+git@github.com:vahana/prf.git#egg=prf
+-e git+git@github.com:vahana/datasets.git#egg=datasets
+-e .
