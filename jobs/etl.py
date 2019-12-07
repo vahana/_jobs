@@ -170,14 +170,16 @@ class Merger:
         self.define_op(params, 'aslist', 'append_to', default=[])
         self.define_op(params, 'aslist', 'append_to_set', default=[])
         self.define_op(params, 'aslist', 'merge_to', default=[])
+        self.define_op(params, 'aslist', 'remove_from', default=[])
         self.define_op(params, 'aslist', 'fields', allow_missing=True)
         self.define_op(params, 'asstr', 'merge_rules', allow_missing=True)
+        self.define_op(params, 'asstr', 'merge_rules_scm', allow_missing=True)
         self.define_op(params, 'asstr', 'merge_as', allow_missing=True)
         self.define_op(params, 'asbool', 'unwind', default=True)
         self.define_op(params, 'asbool', 'fail_on_error', default=True)
 
         if params.get('merge_rules'):
-            self.merge_rules = maybe_dotted(params.merge_rules)()
+            self.merge_rules = maybe_dotted(params.merge_rules)(scm=params.get('merge_rules_scm'))
 
         self._operations['query'] = dict
         self._operations['transformer'] = dict
@@ -230,7 +232,7 @@ class Merger:
             mrg.pop('_index', None)
 
         # if merger data index is in target
-        elif mrg._index in self._target_klass.index_map:
+        elif '_index' in mrg and mrg._index in self._target_klass.index_map:
             src.pop('_index', None)
 
         # let downstream decide
@@ -338,7 +340,7 @@ class Merger:
                                                 (MDIRECTIONS, self.params.merge_direction))
 
         update_params = self.params.extract(['append_to', 'append_to_set',
-                                             'overwrite', 'flatten', 'merge_to'])
+                                             'overwrite', 'flatten', 'merge_to', 'remove_from'])
 
         for mrg in self.read(src):
             matched = True
