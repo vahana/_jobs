@@ -4,12 +4,13 @@ import types
 from pprint import pformat
 
 from slovar import slovar
+from slovar.strings import split_strip
 
 import prf
 from prf.utils import DKeyError, DValueError, typecast, rextract
 from prf.utils import maybe_dotted, Throttler
 
-from datasets import get_dataset, get_transformers
+from datasets import get_dataset
 
 from jobs.job import BaseJob, JobHelper
 
@@ -17,6 +18,30 @@ log = logging.getLogger(__name__)
 
 MDIRECTIONS=['s2m', 'm2s']
 MERGER_QUERY_DELIM = '#'
+
+
+def get_transformers(params, logger=None, **tr_args):
+    transformers = {}
+
+    for call, trs in params.get('transformer', {}).items():
+        transformers[call] = []
+        for tr in split_strip(trs):
+            trans, _, trans_as = tr.partition('__as__')
+
+            if trans_as:
+                tr_args['trans_as'] = trans_as
+
+            tr_args.update(params.get('transformer_args', {}))
+
+            tr_module = maybe_dotted(trans)
+            if type(tr_module) == types.FunctionType:
+                transformers[call].append(tr_module)
+            elif type(tr_module) == types.ClassType:
+                transformers[call].append(maybe_dotted(trans)(logger=logger, **tr_args))
+            else:
+                raise ValueError('Bad type for transformer. Must be either function or class, got %s instead' % type(tr_module))
+
+    return transformers
 
 
 def transform(obj, trans, call, fail_on_error=True, **kw):
