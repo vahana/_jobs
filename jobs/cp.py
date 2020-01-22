@@ -18,8 +18,8 @@ BACKENDS = [
 ]
 
 def csv_to_s3(src, trg, callback=None):
-    srv_ob = CSV(src)
-    trg_ob = S3(trg)
+    src_ob = CSV(src)
+    trg_ob = S3(trg, create=True)
 
     s3 = boto3.resource('s3')
     key = trg_ob.file_name.split(trg_ob.bucket.name)[1].strip('/')

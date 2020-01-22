@@ -36,7 +36,7 @@ def get_transformers(params, logger=None, **tr_args):
             tr_module = maybe_dotted(trans)
             if type(tr_module) == types.FunctionType:
                 transformers[call].append(tr_module)
-            elif type(tr_module) == types.ClassType:
+            elif type(tr_module) == type:
                 transformers[call].append(maybe_dotted(trans)(logger=logger, **tr_args))
             else:
                 raise ValueError('Bad type for transformer. Must be either function or class, got %s instead' % type(tr_module))
