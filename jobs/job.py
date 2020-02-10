@@ -164,6 +164,9 @@ class BaseJob(_BaseJob):
         if params.asbool('pylog2es', default=False):
             enable_pylog2es(log_level=params.asint('pylog2es_level', default=20))
 
+        if params.get('log_level'):
+            logging.getLogger().setLevel(params.asint('log_level'))
+
     @classmethod
     @_profiler
     def run(cls, params):
