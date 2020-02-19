@@ -7,7 +7,7 @@ import rq
 import prf.exc
 
 from slovar import slovar
-from prf.utils import resolve_host_to, maybe_dotted
+from prf.utils import resolve_host_to, maybe_dotted, typecast, qs2dict
 from prf.view import BaseView
 from prf.auth import BaseACL
 
