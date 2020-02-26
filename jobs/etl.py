@@ -281,7 +281,6 @@ class Merger:
             return True
 
         for kk, vv in self.params.query.items():
-
             if isinstance(vv, str) and MERGER_QUERY_DELIM in vv:
                 vv = rextract(vv, src, delim=MERGER_QUERY_DELIM, _raise=self.params.strict_match)
                 if vv is None:

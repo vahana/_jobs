@@ -4,8 +4,10 @@ import os
 
 from slovar import slovar
 
-from datasets.backends.s3 import S3
-from datasets.backends.csv import CSV
+from prf.s3 import S3
+from prf.csv import CSV
+
+import impala
 
 from jobs.job import BaseJob
 
@@ -18,17 +20,16 @@ BACKENDS = [
 ]
 
 def csv_to_s3(src, trg, callback=None):
-    src_ob = CSV(src)
+    src_ob = CSV(src, root_path=impala.Settings.get('csv.root'))
     trg_ob = S3(trg, create=True)
 
     s3 = boto3.resource('s3')
-    key = trg_ob.file_name.split(trg_ob.bucket.name)[1].strip('/')
-    s3.meta.client.upload_file(src_ob.file_name, trg_ob.bucket.name, key, Callback=callback)
+    s3.meta.client.upload_file(src_ob.file_name, trg_ob.bucket.name, trg_ob.path, Callback=callback)
 
 
 def s3_to_csv(src, trg, callback=None):
     src_ob = S3(src)
-    trg_ob = CSV(trg, create=True)
+    trg_ob = CSV(trg, create=True, root_path=impala.Settings.get('csv.root'))
 
     s3 = boto3.resource('s3')
     key = src_ob.file_name.split(src_ob.bucket.name)[1].strip('/')
@@ -36,7 +37,7 @@ def s3_to_csv(src, trg, callback=None):
 
 
 def csv_to_mongo(src, trg, callback=None):
-    src_ob = CSV(src)
+    src_ob = CSV(src, root_path=impala.Settings.get('csv.root'))
 
     if not os.path.isfile(src_ob.file_name):
         log.warning('%s is not a file. skipping.' % src_ob.file_name)
