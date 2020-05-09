@@ -32,8 +32,7 @@ def s3_to_csv(src, trg, callback=None):
     trg_ob = CSV(trg, create=True, root_path=impala.Settings.get('csv.root'))
 
     s3 = boto3.resource('s3')
-    key = src_ob.file_name.split(src_ob.bucket.name)[1].strip('/')
-    s3.meta.client.download_file(src_ob.bucket.name, key, trg_ob.file_name, Callback=callback)
+    s3.meta.client.download_file(src_ob.bucket.name, src_ob.path, trg_ob.file_name, Callback=callback)
 
 
 def csv_to_mongo(src, trg, callback=None):
