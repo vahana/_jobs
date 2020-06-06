@@ -66,7 +66,7 @@ class _BaseJob(object):
 
     def __init__(self, name, params):
         self.params = params
-        self.queue = rq.Queue(name, async=self.is_async(params))
+        self.queue = rq.Queue(name, is_async=self.is_async(params))
 
     @classmethod
     def setup(cls, params):
@@ -140,7 +140,8 @@ class _BaseJob(object):
                 )
         else:
             rq_job = self.queue.enqueue(self._run, self.params, job_id = job.id_str,
-                                        timeout=timeout, result_ttl=result_ttl)
+                                        # timeout=timeout,
+                                        result_ttl=result_ttl)
 
         job.reload()
         if job.status:
@@ -158,7 +159,7 @@ class BaseJob(_BaseJob):
     @classmethod
     def setup(cls, params):
         super().setup(params)
-        ns = registered_namespaces(jobs.Settings)
+        ns = registered_namespaces()
         connect_dataset_aliases(jobs.Settings, aliases=ns, reconnect=True)
 
         if params.asbool('pylog2es', default=False):
