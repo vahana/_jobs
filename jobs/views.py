@@ -226,14 +226,6 @@ class BaseJobView(_BaseJobView):
         return job
 
 
-class BaseAPIJobView(BaseJobView):
-
-    def set_limits(self):
-        source = self._params.source
-        source.query._total_limit = 1000000
-        self._params.worker_limits = [0,1000000]
-
-
 class JobStatusView(BaseView):
     _default_params = {
         '_limit': 1,
